@@ -6,9 +6,11 @@
 #
 #------------------------------------------
 
-SCANNING_TIME=$(date +%Y%m%d%H%M%s)
+SCANNING_TIME=$(date +%Y%m%d%H%M)
+SCANNING_DATE=$(date +%Y%m%d)
 HOSTNAME="$(hostname)"
 OS_NAME="$(uname -s)"
+
 ################
 # Get OS Version
 ################
@@ -53,32 +55,50 @@ case ${OS_NAME} in
     ;;
 esac
 
-RESULT_FILE="./syscan.res"
+RESULT_FILE="./syscan_$SCANNING_DATE.res"
+echo "Initialization" > $RESULT_FILE
 
-echo "#################################" > "$RESULT_FILE"
-echo "######## Start Syscan #############" >> $RESULT_FILE
-echo "#################################" >> $RESULT_FILE
-
-echo "Host Name  : $HOSTNAME" >> $RESULT_FILE
-echo "Scan Time  : $SCANNING_TIME=" >> $RESULT_FILE
-echo "Os Name    : $OS_NAME" >> $RESULT_FILE
-echo "OS Version : $OS_VERSION" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
+#####################################
+######### Check Infomation ##########
+#####################################
+echo "<checkinfo>"  >> $RESULT_FILE
+echo "<os>$OS_NAME</os>" >> $RESULT_FILE
+echo "<version>$OS_VERSION</version>" >> $RESULT_FILE
+echo "<hostname>$HOSTNAME</hostname>" >> $RESULT_FILE
+echo "<checkdate>$SCANNING_TIME</checkdate>" >> $RESULT_FILE
+echo "</checkinfo>"  >> $RESULT_FILE
 
 
+#################################
+#### Check Result Write Func ####
+function write_chkresult_xml() {
+    local testid=$1
+    local testcmd=$2
+    local testresult=$2
 
-echo "###################" >> $RESULT_FILE
-echo "#U-01" >>               $RESULT_FILE
-echo "###################" >> $RESULT_FILE
+    echo "  <check>"  >> $RESULT_FILE
+    echo "    <id>$testid</id>"  >> $RESULT_FILE
+    echo "    <cmd>"  >> $RESULT_FILE
+    echo "$testcmd"  >> $RESULT_FILE
+    echo "    </cmd>"  >> $RESULT_FILE
+    echo "    <result>"  >> $RESULT_FILE
+    echo "$testresult"  >> $RESULT_FILE
+    echo "    </result>"  >> $RESULT_FILE
+    echo "  </check>"  >> $RESULT_FILE
+}
+
+
+
+echo "<checklist>"  >> $RESULT_FILE
+echo "</checklist>"  >> $RESULT_FILE
+
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18) 
                 #sshd config 
-                grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+		echo "AAAA"
+                grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE >/dev/null 2>&-
                 if [ $? -ne 0 ]; then
                     echo "Scan Error in U-01" >> $RESULT_FILE
                 fi
@@ -101,6 +121,7 @@ case ${OS_NAME} in
     ;;
     SunOS)
 	cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+	echo "[COMMENT]There should be a line that says \"CONSOLE /dev/console \" ." >> $RESULT_FLIE
     ;;
     AIX)
 	cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
@@ -285,5 +306,6 @@ echo "" >> $RESULT_FILE
 echo "" >> $RESULT_FILE
 
 
+echo "</checklist>"  >> $RESULT_FILE
 
 
