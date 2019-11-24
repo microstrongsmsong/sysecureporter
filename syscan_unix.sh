@@ -68,51 +68,48 @@ echo "<hostname>$HOSTNAME</hostname>" >> $RESULT_FILE
 echo "<checkdate>$SCANNING_TIME</checkdate>" >> $RESULT_FILE
 echo "</checkinfo>"  >> $RESULT_FILE
 
+###################################
+echo "<checklist>"  >> $RESULT_FILE
+###################################
 
 #################################
 #### Check Result Write Func ####
 function write_chkresult_xml() {
     local testid=$1
     local testcmd=$2
-    local testresult=$2
+    local testresult=$3
 
     echo "  <check>"  >> $RESULT_FILE
     echo "    <id>$testid</id>"  >> $RESULT_FILE
     echo "    <cmd>"  >> $RESULT_FILE
-    echo "$testcmd"  >> $RESULT_FILE
+    echo -e "$testcmd"  >> $RESULT_FILE
     echo "    </cmd>"  >> $RESULT_FILE
     echo "    <result>"  >> $RESULT_FILE
-    echo "$testresult"  >> $RESULT_FILE
+    echo -e "$testresult"  >> $RESULT_FILE
     echo "    </result>"  >> $RESULT_FILE
     echo "  </check>"  >> $RESULT_FILE
 }
 
 
-
-echo "<checklist>"  >> $RESULT_FILE
-echo "</checklist>"  >> $RESULT_FILE
-
+#########################
+###### U-001 Start ######
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18) 
                 #sshd config 
-		echo "AAAA"
-                grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE >/dev/null 2>&-
-                if [ $? -ne 0 ]; then
-                    echo "Scan Error in U-01" >> $RESULT_FILE
-                fi
- 
+                CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
+		RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS7)
                 #sshd config 
-                grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+                CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
+		RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS6)
                 #telnet config
-                grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
-                echo "-----------" >> $RESULT_FILE
-                cat /etc/securetty >> $RESULT_FILE
+                CMD="grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$'" 
+		RESULT=$(grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             *)
                 echo "Not Supported...." >> $RESULT_FILE
@@ -120,69 +117,485 @@ case ${OS_NAME} in
 	esac
     ;;
     SunOS)
-	cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
-	echo "[COMMENT]There should be a line that says \"CONSOLE /dev/console \" ." >> $RESULT_FLIE
+        CMD="cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     AIX)
-	cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+        CMD="cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     HP-UX)
-	cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+        CMD="cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
-        echo "Not Supported...." >> $RESULT_FILE
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
     ;;
 esac
-echo "#####U-01 End######" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-01 "$CMD" "$RESULT"
+###### U-001 End ######
+#########################
 
 
-echo "###################" >> $RESULT_FILE
-echo "#U-02" >>               $RESULT_FILE
-echo "###################" >> $RESULT_FILE
+#########################
+###### U-002 Start ######
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18)
-                cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
-                echo "--------------" >> $RESULT_FILE
-                grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+                CMD1="cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD2="grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$'" 
+                RESULT1=$(cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$') 
+                RESULT2=$(grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$') 
+		CMD="${CMD1}\n-----------------\n${CMD2}"
+                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
             ;; 
             CentOS7)
-                cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+                CMD="cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$'" 
+                RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS6|CentOS5)
-                cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
-                echo "--------------" >> $RESULT_FILE
-                cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+                CMD1="cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD2="cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$'" 
+		RESULT1=$(cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$') 
+		RESULT2=$(cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$') 
+		CMD="${CMD1}\n-----------------\n${CMD2}"
+		RESULT="${RESULT1}\n-----------------\n${RESULT2}"
             ;; 
 
 
 	esac
     ;;
     SunOS)
-        cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+        CMD="cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     AIX)
-        cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+        CMD="cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     HP-UX)
-        cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+        CMD="cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
-        echo "Not Supported...." | egrep -v '^[[:space:]]*(#.*)?$' >> $RESULT_FILE
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
     ;;
 esac
-echo "#####U-02 End######" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-02 "$CMD" "$RESULT"
+###### U-002 End ######
+#########################
 
 
 
-echo "###################" >> $RESULT_FILE
-echo "#U-03" >>               $RESULT_FILE
-echo "###################" >> $RESULT_FILE
+#########################
+###### U-003 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD="" 
+                RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
+            ;; 
+            CentOS7)
+                CMD="cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$'" 
+                RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$') 
+    ;;
+    AIX)
+        CMD="cat /etc/security/user | grep loginretries | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$') 
+    ;;
+    HP-UX)
+        CMD="cat /tcb/files/auth/system/default | grep u_maxtries | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /tcb/files/auth/system/default | grep u_maxtries | egrep -v '^[[:space:]]*(#.*)?$') 
+	CMD="cat /etc/default/security | grep AUTH_MAXTRIES | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/default/security | grep AUTH_MAXTRIES | egrep -v '^[[:space:]]*(#.*)?$') 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-003 "$CMD" "$RESULT"
+###### U-003 End ######
+#########################
+
+
+#########################
+###### U-004 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+                RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
+            ;; 
+            CentOS7)
+                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+                RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
+            ;; 
+            CentOS6)
+                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+                RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
+    ;;
+    AIX)
+        #check is there /etc/security/passwd file?
+    ;;
+    HP-UX)
+        CMD="cat /etc/security/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+        RESULT=$(cat /etc/security/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-004 "$CMD" "$RESULT"
+###### U-004 End ######
+#########################
+
+
+#########################
+###### U-005 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD="echo $PATH" 
+                RESULT=$(echo $PATH) 
+            ;; 
+            CentOS7)
+                CMD="echo $PATH" 
+                RESULT=$(echo $PATH) 
+            ;; 
+            CentOS6)
+                CMD="echo $PATH" 
+                RESULT=$(echo $PATH) 
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="echo $PATH" 
+        RESULT=$(echo $PATH) 
+    ;;
+    AIX)
+        CMD="echo $PATH" 
+        RESULT=$(echo $PATH) 
+    ;;
+    HP-UX)
+        CMD="echo $PATH" 
+        RESULT=$(echo $PATH) 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-005 "$CMD" "$RESULT"
+###### U-005 End ######
+#########################
+
+
+
+#########################
+###### U-006 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD1="find / -nouser -print" 
+                CMD2="find / -nogroup -print" 
+                RESULT1=$(find / -nouser -print) 
+                RESULT2=$(find / -nogroup -print) 
+		CMD="${CMD1}\n-----------------\n${CMD2}"
+                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
+            ;; 
+            CentOS7)
+                CMD1="find / -nouser -print" 
+                CMD2="find / -nogroup -print" 
+                RESULT1=$(find / -nouser -print) 
+                RESULT2=$(find / -nogroup -print) 
+		CMD="${CMD1}\n-----------------\n${CMD2}"
+                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
+            ;; 
+            CentOS6)
+                CMD1="find / -nouser -print" 
+                CMD2="find / -nogroup -print" 
+                RESULT1=$(find / -nouser -print) 
+                RESULT2=$(find / -nogroup -print) 
+		CMD="${CMD1}\n-----------------\n${CMD2}"
+                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
+        RESULT="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
+    ;;
+    AIX)
+        CMD="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
+        RESULT="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
+    ;;
+    HP-UX)
+        CMD="find / \ -nouser -o -nogroup \ -xdev -exec ls -al {} \; 2> /dev/null"
+        RESULT="find / \ -nouser -o -nogroup \ -xdev -exec ls -al {} \; 2> /dev/null"
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-006 "$CMD" "$RESULT"
+###### U-006 End ######
+
+
+
+
+#########################
+###### U-007 Start ######
+case ${OS_NAME} in
+    Linux)
+        CMD="ls -l /etc/passwd"
+        RESULT="ls -l /etc/passwd"
+    ;;
+    SunOS)
+        CMD="ls -l /etc/passwd"
+        RESULT="ls -l /etc/passwd"
+    ;;
+    AIX)
+        CMD="ls -l /etc/passwd"
+        RESULT="ls -l /etc/passwd"
+    ;;
+    HP-UX)
+        CMD="ls -l /etc/passwd"
+        RESULT="ls -l /etc/passwd"
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-007 "$CMD" "$RESULT"
+###### U-007 End ######
+
+
+
+#########################
+###### U-008 Start ######
+case ${OS_NAME} in
+    Linux)
+        CMD="ls -l /etc/shadow"
+        RESULT="ls -l /etc/shadow"
+    ;;
+    SunOS)
+        CMD="ls -l /etc/shadow"
+        RESULT="ls -l /etc/shadow"
+    ;;
+    AIX)
+        CMD="ls -ld /etc/security/passwd"
+        RESULT="ls -l /etc/security/passwd"
+    ;;
+    HP-UX)
+        CMD="ls -ld /tcb/files/auth"
+        RESULT="ls -l /tcb/files/suth"
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-008 "$CMD" "$RESULT"
+###### U-008 End ######
+
+
+#########################
+###### U-009 Start ######
+case ${OS_NAME} in
+    Linux)
+        CMD="ls -l /etc/hosts"
+        RESULT="ls -l /etc/hosts"
+    ;;
+    SunOS)
+        CMD="ls -l /etc/hosts"
+        RESULT="ls -l /etc/hosts"
+    ;;
+    AIX)
+        CMD="ls -l /etc/hosts"
+        RESULT="ls -l /etc/hosts"
+    ;;
+    HP-UX)
+        CMD="ls -l /etc/hosts"
+        RESULT="ls -l /etc/hosts"
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-009 "$CMD" "$RESULT"
+###### U-009 End ######
+
+
+#########################
+###### U-010 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+                CMD1="ls -l /etc/xinetd.conf" 
+                CMD2="ls -al /etc/xinetd.d/*" 
+                RESULT1=$(ls -l /etc/xinetd.conf) 
+                RESULT2=$(ls -al /etc/xinetd.d/*) 
+		CMD="${CMD1}\n-----------------\n${CMD2}"
+                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="ls -l /etc/inetd.conf" 
+        RESULT="ls -l /etc/ineted.conf" 
+    ;;
+    AIX)
+        CMD="ls -l /etc/inetd.conf" 
+        RESULT="ls -l /etc/ineted.conf" 
+    ;;
+    HP-UX)
+        CMD="ls -l /etc/inetd.conf" 
+        RESULT="ls -l /etc/ineted.conf" 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-010 "$CMD" "$RESULT"
+###### U-010 End ######
+
+
+
+#########################
+###### U-011 Start ######
+case ${OS_NAME} in
+    Linux)
+        CMD="ls -l /etc/syslog.conf" 
+        RESULT="ls -l /etc/syslog.conf" 
+    ;;
+    SunOS)
+        CMD="ls -l /etc/syslog.conf" 
+        RESULT="ls -l /etc/syslog.conf" 
+    ;;
+    AIX)
+        CMD="ls -l /etc/syslog.conf" 
+        RESULT="ls -l /etc/syslog.conf" 
+    ;;
+    HP-UX)
+        CMD="ls -l /etc/syslog.conf" 
+        RESULT="ls -l /etc/syslog.conf" 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-011 "$CMD" "$RESULT"
+###### U-011 End ######
+
+
+
+#########################
+###### U-012 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+                CMD="ls -l /etc/services.conf" 
+                RESULT="ls -l /etc/services.conf" 
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="ls -l /etc/services.conf" 
+        RESULT="ls -l /etc/services.conf" 
+    ;;
+    AIX)
+        CMD="ls -l /etc/services.conf" 
+        RESULT="ls -l /etc/services.conf" 
+    ;;
+    HP-UX)
+        CMD="ls -l /etc/services.conf" 
+        RESULT="ls -l /etc/services.conf" 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-012 "$CMD" "$RESULT"
+###### U-012 End ######
+
+
+#########################
+###### U-013 Start ######
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
@@ -203,17 +616,19 @@ case ${OS_NAME} in
     HP-UX)
     ;;
     *)
-        echo "Not Supported...." >> $RESULT_FILE
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
     ;;
 esac
-echo "#####U-03 End######" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-013 "$CMD" "$RESULT"
+###### U-013 End ######
 
 
-echo "###################" >> $RESULT_FILE
-echo "#U-04" >>               $RESULT_FILE
-echo "###################" >> $RESULT_FILE
+
+#########################
+###### U-014 Start ######
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
@@ -234,76 +649,21 @@ case ${OS_NAME} in
     HP-UX)
     ;;
     *)
-        echo "Not Supported...." >> $RESULT_FILE
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
     ;;
 esac
-echo "#####U-04 End######" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-014 "$CMD" "$RESULT"
+###### U-014 End ######
 
 
 
-echo "###################" >> $RESULT_FILE
-echo "#U-05" >>               $RESULT_FILE
-echo "###################" >> $RESULT_FILE
-case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-            ;; 
-            CentOS7)
-            ;; 
-            CentOS6)
-            ;; 
-
-
-	esac
-    ;;
-    SunOS)
-    ;;
-    AIX)
-    ;;
-    HP-UX)
-    ;;
-    *)
-        echo "Not Supported...." >> $RESULT_FILE
-    ;;
-esac
-echo "#####U-05 End######" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
 
 
 
-echo "###################" >> $RESULT_FILE
-echo "#U-06" >>               $RESULT_FILE
-echo "###################" >> $RESULT_FILE
-case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-            ;; 
-            CentOS7)
-            ;; 
-            CentOS6)
-            ;; 
 
-
-	esac
-    ;;
-    SunOS)
-    ;;
-    AIX)
-    ;;
-    HP-UX)
-    ;;
-    *)
-        echo "Not Supported...." >> $RESULT_FILE
-    ;;
-esac
-echo "#####U-06 End######" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
-echo "" >> $RESULT_FILE
 
 
 echo "</checklist>"  >> $RESULT_FILE
