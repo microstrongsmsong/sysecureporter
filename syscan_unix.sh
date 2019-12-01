@@ -96,17 +96,29 @@ function write_chkresult_xml() {
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18) 
-                #sshd config 
-                CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
-		RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
+            Ubuntu16|Ubuntu18)
+                systemctl status sshd >> /dev/null
+                if [ $? -eq 0 ]; then
+                    #sshd config 
+                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
+		    RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
+                else
+                    CMD="systemctl status sshd" 
+		    RESULT="N/A" 
+                fi
             ;; 
             CentOS7)
-                #sshd config 
-                CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
-		RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
+                systemctl status sshd >> /dev/null
+                if [ $? -eq 0 ]; then
+                    #sshd config 
+                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
+		    RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
+                else
+                    CMD="systemctl status sshd" 
+		    RESULT="N/A"
+                fi
             ;; 
-            CentOS6)
+            CentOS6|CentOS5)
                 #telnet config
                 CMD="grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$'" 
 		RESULT=$(grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$') 
@@ -138,7 +150,6 @@ esac
 write_chkresult_xml U-01 "$CMD" "$RESULT"
 ###### U-001 End ######
 #########################
-
 
 #########################
 ###### U-002 Start ######
@@ -193,6 +204,7 @@ write_chkresult_xml U-02 "$CMD" "$RESULT"
 #########################
 
 
+:<<'END'
 
 #########################
 ###### U-003 Start ######
@@ -600,20 +612,32 @@ case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18)
+                CMD="" 
+                RESULT="" 
             ;; 
             CentOS7)
+                CMD="" 
+                RESULT="" 
             ;; 
             CentOS6)
+                CMD="" 
+                RESULT="" 
             ;; 
 
 
 	esac
     ;;
     SunOS)
+        CMD="" 
+        RESULT="" 
     ;;
     AIX)
+        CMD="" 
+        RESULT="" 
     ;;
     HP-UX)
+        CMD="" 
+        RESULT="" 
     ;;
     *)
         CMD="Not Supported OS" 
@@ -629,6 +653,139 @@ write_chkresult_xml U-013 "$CMD" "$RESULT"
 
 #########################
 ###### U-014 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD="" 
+                RESULT="" 
+            ;; 
+            CentOS7)
+                CMD="" 
+                RESULT="" 
+            ;; 
+            CentOS6)
+                CMD="" 
+                RESULT="" 
+            ;; 
+	esac
+    ;;
+    SunOS)
+        CMD="" 
+        RESULT="" 
+    ;;
+    AIX)
+        CMD="" 
+        RESULT="" 
+    ;;
+    HP-UX)
+        CMD="" 
+        RESULT="" 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-014 "$CMD" "$RESULT"
+###### U-014 End ######
+
+
+
+#########################
+###### U-015 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD="find / -type f -perm -2 -exec ls -l {} \;" 
+                RESULT="find / -type f -perm -2 -exec ls -l {} \;" 
+            ;; 
+            CentOS7)
+                CMD="find / -type f -perm -2 -exec ls -l {} \;" 
+                RESULT="find / -type f -perm -2 -exec ls -l {} \;" 
+            ;; 
+            CentOS6)
+                CMD="find / -type f -perm -2 -exec ls -l {} \;" 
+                RESULT="find / -type f -perm -2 -exec ls -l {} \;" 
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="find / -type f -perm -2 -exec ls -l {} \;" 
+        RESULT="find / -type f -perm -2 -exec ls -l {} \;" 
+    ;;
+    AIX)
+        CMD="find / -type f -perm -2 -exec ls -l {} \;" 
+        RESULT="find / -type f -perm -2 -exec ls -l {} \;" 
+    ;;
+    HP-UX)
+        CMD="find / -type f -perm -2 -exec ls -l {} \;" 
+        RESULT="find / -type f -perm -2 -exec ls -l {} \;" 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-015 "$CMD" "$RESULT"
+###### U-015 End ######
+
+
+#########################
+###### U-016 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+                CMD="find /dev -type f -exec ls -l {} \;" 
+                RESULT="find /dev -type f -exec ls -l {} \;" 
+            ;; 
+            CentOS7)
+                CMD="find /dev -type f -exec ls -l {} \;" 
+                RESULT="find /dev -type f -exec ls -l {} \;" 
+            ;; 
+            CentOS6)
+                CMD="find /dev -type f -exec ls -l {} \;" 
+                RESULT="find /dev -type f -exec ls -l {} \;" 
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+        CMD="find /dev -type f -exec ls -l {} \;" 
+        RESULT="find /dev -type f -exec ls -l {} \;" 
+    ;;
+    AIX)
+        CMD="find /dev -type f -exec ls -l {} \;" 
+        RESULT="find /dev -type f -exec ls -l {} \;" 
+    ;;
+    HP-UX)
+        CMD="find /dev -type f -exec ls -l {} \;" 
+        RESULT="find /dev -type f -exec ls -l {} \;" 
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-016 "$CMD" "$RESULT"
+###### U-016 End ######
+
+
+
+
+#########################
+###### U-017 Start ######
 case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
@@ -655,8 +812,277 @@ case ${OS_NAME} in
 esac
 #echo $CMD
 #echo "$RESULT"
-write_chkresult_xml U-014 "$CMD" "$RESULT"
-###### U-014 End ######
+write_chkresult_xml U-017 "$CMD" "$RESULT"
+###### U-017 End ######
+
+
+#########################
+###### U-018 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-018 "$CMD" "$RESULT"
+###### U-018 End ######
+
+
+#########################
+###### U-019 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-019 "$CMD" "$RESULT"
+###### U-019 End ######
+
+
+
+#########################
+###### U-020 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-020 "$CMD" "$RESULT"
+###### U-020 End ######
+
+
+
+#########################
+###### U-021 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-021 "$CMD" "$RESULT"
+###### U-021 End ######
+
+
+#########################
+###### U-022 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-022 "$CMD" "$RESULT"
+###### U-022 End ######
+
+
+
+#########################
+###### U-023 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-023 "$CMD" "$RESULT"
+###### U-023 End ######
+
+
+#########################
+###### U-024 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-024 "$CMD" "$RESULT"
+###### U-024 End ######
+
+
+#########################
+###### U-025 Start ######
+case ${OS_NAME} in
+    Linux)
+        case ${OS_VERSION} in
+            Ubuntu16|Ubuntu18)
+            ;; 
+            CentOS7)
+            ;; 
+            CentOS6)
+            ;; 
+
+
+	esac
+    ;;
+    SunOS)
+    ;;
+    AIX)
+    ;;
+    HP-UX)
+    ;;
+    *)
+        CMD="Not Supported OS" 
+        RESULT="Not Supported OS" 
+    ;;
+esac
+#echo $CMD
+#echo "$RESULT"
+write_chkresult_xml U-025 "$CMD" "$RESULT"
+###### U-025 End ######
+
+END
+
+
+
+
+
+
+
+
 
 
 
