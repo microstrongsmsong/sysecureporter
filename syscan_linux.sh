@@ -14,7 +14,6 @@ OS_NAME=$1
 OS_VERSION=$2
 
 
-
 RESULT_FILE="./syscan_$SCANNING_DATE.res"
 echo "Initialization" > $RESULT_FILE
 
