@@ -9,7 +9,6 @@
 SCANNING_TIME=$(date +%Y%m%d%H%M)
 SCANNING_DATE=$(date +%Y%m%d)
 HOSTNAME="$(hostname)"
-#OS_NAME="$(uname -s)"
 OS_NAME=$1
 OS_VERSION=$2
 
@@ -59,7 +58,7 @@ case ${OS_NAME} in
                 systemctl status sshd >> /dev/null
                 if [ $? -eq 0 ]; then
                     #sshd config 
-                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
+                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config " 
 		    RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
                 else
                     CMD="systemctl status sshd" 
@@ -70,7 +69,7 @@ case ${OS_NAME} in
                 systemctl status sshd >> /dev/null
                 if [ $? -eq 0 ]; then
                     #sshd config 
-                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
+                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config " 
 		    RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
                 else
                     CMD="systemctl status sshd" 
@@ -79,7 +78,7 @@ case ${OS_NAME} in
             ;; 
             CentOS6|CentOS5)
                 #telnet config
-                CMD="grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD="grep "auth required" /etc/pam.d/login " 
 		RESULT=$(grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             *)
@@ -87,21 +86,9 @@ case ${OS_NAME} in
             ;;
 	esac
     ;;
-    SunOS)
-        CMD="cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    AIX)
-        CMD="cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    HP-UX)
-        CMD="cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
     *)
-        CMD="Not Supported OS" 
-        RESULT="Not Supported OS" 
+        CMD="Not Linux. " 
+        RESULT="Not Linux." 
     ;;
 esac
 #echo $CMD
@@ -116,20 +103,20 @@ case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18)
-                CMD1="cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$'" 
-                CMD2="grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD1="cat /etc/login.defs " 
+                CMD2="grep password /etc/pam.d/common-password " 
                 RESULT1=$(cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$') 
                 RESULT2=$(grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$') 
 		CMD="${CMD1}\n-----------------\n${CMD2}"
                 RESULT="${RESULT1}\n-----------------\n${RESULT2}"
             ;; 
             CentOS7)
-                CMD="cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD="cat /etc/security/pwquality.conf " 
                 RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS6|CentOS5)
-                CMD1="cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$'" 
-                CMD2="cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD1="cat /etc/pam.d/system-auth " 
+                CMD2="cat /etc/login.defs " 
 		RESULT1=$(cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$') 
 		RESULT2=$(cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$') 
 		CMD="${CMD1}\n-----------------\n${CMD2}"
@@ -138,18 +125,6 @@ case ${OS_NAME} in
 
 
 	esac
-    ;;
-    SunOS)
-        CMD="cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    AIX)
-        CMD="cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    HP-UX)
-        CMD="cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
         CMD="Not Supported OS" 
@@ -163,7 +138,6 @@ write_chkresult_xml U-02 "$CMD" "$RESULT"
 #########################
 
 
-:<<'END'
 
 #########################
 ###### U-003 Start ######
@@ -171,11 +145,11 @@ case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18)
-                CMD="" 
+                CMD="cat /etc/security/pwquality.conf " 
                 RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS7)
-                CMD="cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD="cat /etc/security/pwquality.conf " 
                 RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS6)
@@ -183,20 +157,6 @@ case ${OS_NAME} in
 
 
 	esac
-    ;;
-    SunOS)
-        CMD="cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    AIX)
-        CMD="cat /etc/security/user | grep loginretries | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    HP-UX)
-        CMD="cat /tcb/files/auth/system/default | grep u_maxtries | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /tcb/files/auth/system/default | grep u_maxtries | egrep -v '^[[:space:]]*(#.*)?$') 
-	CMD="cat /etc/default/security | grep AUTH_MAXTRIES | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/default/security | grep AUTH_MAXTRIES | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
         CMD="Not Supported OS" 
@@ -216,31 +176,20 @@ case ${OS_NAME} in
     Linux)
         case ${OS_VERSION} in
             Ubuntu16|Ubuntu18)
-                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD="cat /etc/passwd | grep root " 
                 RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS7)
-                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD="cat /etc/passwd | grep root " 
                 RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
             CentOS6)
-                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+                CMD="cat /etc/passwd | grep root " 
                 RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
             ;; 
 
 
 	esac
-    ;;
-    SunOS)
-        CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
-    ;;
-    AIX)
-        #check is there /etc/security/passwd file?
-    ;;
-    HP-UX)
-        CMD="cat /etc/security/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/security/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
         CMD="Not Supported OS" 
@@ -333,18 +282,6 @@ case ${OS_NAME} in
 
 	esac
     ;;
-    SunOS)
-        CMD="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
-        RESULT="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
-    ;;
-    AIX)
-        CMD="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
-        RESULT="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
-    ;;
-    HP-UX)
-        CMD="find / \ -nouser -o -nogroup \ -xdev -exec ls -al {} \; 2> /dev/null"
-        RESULT="find / \ -nouser -o -nogroup \ -xdev -exec ls -al {} \; 2> /dev/null"
-    ;;
     *)
         CMD="Not Supported OS" 
         RESULT="Not Supported OS" 
@@ -365,18 +302,6 @@ case ${OS_NAME} in
         CMD="ls -l /etc/passwd"
         RESULT="ls -l /etc/passwd"
     ;;
-    SunOS)
-        CMD="ls -l /etc/passwd"
-        RESULT="ls -l /etc/passwd"
-    ;;
-    AIX)
-        CMD="ls -l /etc/passwd"
-        RESULT="ls -l /etc/passwd"
-    ;;
-    HP-UX)
-        CMD="ls -l /etc/passwd"
-        RESULT="ls -l /etc/passwd"
-    ;;
     *)
         CMD="Not Supported OS" 
         RESULT="Not Supported OS" 
@@ -388,6 +313,7 @@ write_chkresult_xml U-007 "$CMD" "$RESULT"
 ###### U-007 End ######
 
 
+:<<'END'
 
 #########################
 ###### U-008 Start ######

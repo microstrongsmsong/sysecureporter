@@ -54,50 +54,16 @@ function write_chkresult_xml() {
 #########################
 ###### U-001 Start ######
 case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-                systemctl status sshd >> /dev/null
-                if [ $? -eq 0 ]; then
-                    #sshd config 
-                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
-		    RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
-                else
-                    CMD="systemctl status sshd" 
-		    RESULT="N/A" 
-                fi
-            ;; 
-            CentOS7)
-                systemctl status sshd >> /dev/null
-                if [ $? -eq 0 ]; then
-                    #sshd config 
-                    CMD="grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$' " 
-		    RESULT=$(grep  PermitRootLogin /etc/ssh/sshd_config | egrep -v '^[[:space:]]*(#.*)?$') 
-                else
-                    CMD="systemctl status sshd" 
-		    RESULT="N/A"
-                fi
-            ;; 
-            CentOS6|CentOS5)
-                #telnet config
-                CMD="grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$'" 
-		RESULT=$(grep "auth required" /etc/pam.d/login | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-            *)
-                echo "Not Supported...." >> $RESULT_FILE
-            ;;
-	esac
-    ;;
     SunOS)
-        CMD="cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/default/login | grep CONSOLE " 
         RESULT=$(cat /etc/default/login | grep CONSOLE | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     AIX)
-        CMD="cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$'" 
-        RESULT=$(cat /etc/security/user | egrep -v '^[[:space:]]*(#.*)?$') 
+        CMD="cat /etc/security/user " 
+        RESULT=$(cat /etc/security/user ) 
     ;;
     HP-UX)
-        CMD="cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/securetty " 
         RESULT=$(cat /etc/securetty | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
@@ -114,42 +80,16 @@ write_chkresult_xml U-01 "$CMD" "$RESULT"
 #########################
 ###### U-002 Start ######
 case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-                CMD1="cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$'" 
-                CMD2="grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$'" 
-                RESULT1=$(cat /etc/login.defs  | egrep -v '^[[:space:]]*(#.*)?$') 
-                RESULT2=$(grep password /etc/pam.d/common-password | egrep -v '^[[:space:]]*(#.*)?$') 
-		CMD="${CMD1}\n-----------------\n${CMD2}"
-                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
-            ;; 
-            CentOS7)
-                CMD="cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$'" 
-                RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-            CentOS6|CentOS5)
-                CMD1="cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$'" 
-                CMD2="cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$'" 
-		RESULT1=$(cat /etc/pam.d/system-auth | egrep -v '^[[:space:]]*(#.*)?$') 
-		RESULT2=$(cat /etc/login.defs | egrep -v '^[[:space:]]*(#.*)?$') 
-		CMD="${CMD1}\n-----------------\n${CMD2}"
-		RESULT="${RESULT1}\n-----------------\n${RESULT2}"
-            ;; 
-
-
-	esac
-    ;;
     SunOS)
-        CMD="cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/default/passwd " 
         RESULT=$(cat /etc/default/passwd | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     AIX)
-        CMD="cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/default/user " 
         RESULT=$(cat /etc/default/user | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     HP-UX)
-        CMD="cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/default/security " 
         RESULT=$(cat /etc/default/security | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
@@ -164,39 +104,22 @@ write_chkresult_xml U-02 "$CMD" "$RESULT"
 #########################
 
 
-:<<'END'
 
 #########################
 ###### U-003 Start ######
 case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-                CMD="" 
-                RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-            CentOS7)
-                CMD="cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$'" 
-                RESULT=$(cat /etc/security/pwquality.conf | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-            CentOS6)
-            ;; 
-
-
-	esac
-    ;;
     SunOS)
-        CMD="cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/default/login | grep RETRIES " 
         RESULT=$(cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     AIX)
-        CMD="cat /etc/security/user | grep loginretries | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/security/user | grep loginretries " 
         RESULT=$(cat /etc/default/login | grep RETRIES | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     HP-UX)
-        CMD="cat /tcb/files/auth/system/default | grep u_maxtries | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /tcb/files/auth/system/default | grep u_maxtries " 
         RESULT=$(cat /tcb/files/auth/system/default | grep u_maxtries | egrep -v '^[[:space:]]*(#.*)?$') 
-	CMD="cat /etc/default/security | grep AUTH_MAXTRIES | egrep -v '^[[:space:]]*(#.*)?$'" 
+	CMD="cat /etc/default/security | grep AUTH_MAXTRIES " 
         RESULT=$(cat /etc/default/security | grep AUTH_MAXTRIES | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
@@ -214,33 +137,15 @@ write_chkresult_xml U-003 "$CMD" "$RESULT"
 #########################
 ###### U-004 Start ######
 case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
-                RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-            CentOS7)
-                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
-                RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-            CentOS6)
-                CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
-                RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
-            ;; 
-
-
-	esac
-    ;;
     SunOS)
-        CMD="cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/passwd | grep root " 
         RESULT=$(cat /etc/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     AIX)
         #check is there /etc/security/passwd file?
     ;;
     HP-UX)
-        CMD="cat /etc/security/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$'" 
+        CMD="cat /etc/security/passwd | grep root " 
         RESULT=$(cat /etc/security/passwd | grep root | egrep -v '^[[:space:]]*(#.*)?$') 
     ;;
     *)
@@ -258,24 +163,6 @@ write_chkresult_xml U-004 "$CMD" "$RESULT"
 #########################
 ###### U-005 Start ######
 case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-                CMD="echo $PATH" 
-                RESULT=$(echo $PATH) 
-            ;; 
-            CentOS7)
-                CMD="echo $PATH" 
-                RESULT=$(echo $PATH) 
-            ;; 
-            CentOS6)
-                CMD="echo $PATH" 
-                RESULT=$(echo $PATH) 
-            ;; 
-
-
-	esac
-    ;;
     SunOS)
         CMD="echo $PATH" 
         RESULT=$(echo $PATH) 
@@ -304,36 +191,6 @@ write_chkresult_xml U-005 "$CMD" "$RESULT"
 #########################
 ###### U-006 Start ######
 case ${OS_NAME} in
-    Linux)
-        case ${OS_VERSION} in
-            Ubuntu16|Ubuntu18)
-                CMD1="find / -nouser -print" 
-                CMD2="find / -nogroup -print" 
-                RESULT1=$(find / -nouser -print) 
-                RESULT2=$(find / -nogroup -print) 
-		CMD="${CMD1}\n-----------------\n${CMD2}"
-                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
-            ;; 
-            CentOS7)
-                CMD1="find / -nouser -print" 
-                CMD2="find / -nogroup -print" 
-                RESULT1=$(find / -nouser -print) 
-                RESULT2=$(find / -nogroup -print) 
-		CMD="${CMD1}\n-----------------\n${CMD2}"
-                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
-            ;; 
-            CentOS6)
-                CMD1="find / -nouser -print" 
-                CMD2="find / -nogroup -print" 
-                RESULT1=$(find / -nouser -print) 
-                RESULT2=$(find / -nogroup -print) 
-		CMD="${CMD1}\n-----------------\n${CMD2}"
-                RESULT="${RESULT1}\n-----------------\n${RESULT2}"
-            ;; 
-
-
-	esac
-    ;;
     SunOS)
         CMD="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
         RESULT="find / -nouser -o -nogroup -xdev -ls 2 > /dev/null"
@@ -362,10 +219,6 @@ write_chkresult_xml U-006 "$CMD" "$RESULT"
 #########################
 ###### U-007 Start ######
 case ${OS_NAME} in
-    Linux)
-        CMD="ls -l /etc/passwd"
-        RESULT="ls -l /etc/passwd"
-    ;;
     SunOS)
         CMD="ls -l /etc/passwd"
         RESULT="ls -l /etc/passwd"
@@ -389,6 +242,7 @@ write_chkresult_xml U-007 "$CMD" "$RESULT"
 ###### U-007 End ######
 
 
+:<<'END'
 
 #########################
 ###### U-008 Start ######
